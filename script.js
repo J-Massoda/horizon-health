@@ -17,7 +17,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    window.addEventListener('scroll', handleNavbarScroll);
+    // Use debounced scroll handler for better performance
+    let scrollTimeout;
+    window.addEventListener('scroll', function() {
+        if (scrollTimeout) {
+            window.cancelAnimationFrame(scrollTimeout);
+        }
+        
+        scrollTimeout = window.requestAnimationFrame(function() {
+            handleNavbarScroll();
+        });
+    }, { passive: true });
     
     // ====================================
     // Mobile Menu Toggle
@@ -139,20 +149,6 @@ document.addEventListener('DOMContentLoaded', function() {
             heroContent.style.opacity = '1';
         }
     });
-    
-    // ====================================
-    // Performance: Debounce Scroll Event
-    // ====================================
-    let scrollTimeout;
-    window.addEventListener('scroll', function() {
-        if (scrollTimeout) {
-            window.cancelAnimationFrame(scrollTimeout);
-        }
-        
-        scrollTimeout = window.requestAnimationFrame(function() {
-            handleNavbarScroll();
-        });
-    }, { passive: true });
     
     // ====================================
     // Accessibility: Focus Management
