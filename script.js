@@ -78,47 +78,46 @@ document.addEventListener('DOMContentLoaded', function() {
     // ====================================
     // Intersection Observer for Scroll Animations
     // ====================================
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    };
-    
-    const observer = new IntersectionObserver(function(entries) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-                
-                // For staggered animations on cards
-                if (entry.target.classList.contains('value-card') || 
-                    entry.target.classList.contains('service-card')) {
-                    const cards = entry.target.parentElement.children;
-                    Array.from(cards).forEach((card, index) => {
-                        setTimeout(() => {
-                            card.classList.add('visible');
-                        }, index * 100); // Stagger by 100ms
-                    });
+    const animatedElements = [
+        ...document.querySelectorAll('.fade-in'),
+        ...document.querySelectorAll('.value-card'),
+        ...document.querySelectorAll('.service-card')
+    ];
+
+    if ('IntersectionObserver' in window) {
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    // For staggered animations on cards
+                    if (entry.target.classList.contains('value-card') || 
+                        entry.target.classList.contains('service-card')) {
+                        const cards = entry.target.parentElement.children;
+                        Array.from(cards).forEach((card, index) => {
+                            setTimeout(() => {
+                                card.classList.add('visible');
+                            }, index * 100); // Stagger by 100ms
+                        });
+                    }
                 }
-            }
+            });
+        }, observerOptions);
+        
+        animatedElements.forEach(element => {
+            observer.observe(element);
         });
-    }, observerOptions);
-    
-    // Observe all fade-in elements
-    const fadeElements = document.querySelectorAll('.fade-in');
-    fadeElements.forEach(element => {
-        observer.observe(element);
-    });
-    
-    // Observe value cards
-    const valueCards = document.querySelectorAll('.value-card');
-    valueCards.forEach(card => {
-        observer.observe(card);
-    });
-    
-    // Observe service cards
-    const serviceCards = document.querySelectorAll('.service-card');
-    serviceCards.forEach(card => {
-        observer.observe(card);
-    });
+    } else {
+        // Fallback for browsers that don't support IntersectionObserver
+        animatedElements.forEach(element => {
+            element.classList.add('visible');
+        });
+    }
     
     // ====================================
     // CTA Button Interaction
