@@ -83,42 +83,43 @@ document.addEventListener('DOMContentLoaded', function() {
         rootMargin: '0px 0px -50px 0px'
     };
     
-    const observer = new IntersectionObserver(function(entries) {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-                
-                // For staggered animations on cards
-                if (entry.target.classList.contains('value-card') || 
-                    entry.target.classList.contains('service-card')) {
-                    const cards = entry.target.parentElement.children;
-                    Array.from(cards).forEach((card, index) => {
-                        setTimeout(() => {
-                            card.classList.add('visible');
-                        }, index * 100); // Stagger by 100ms
-                    });
-                }
-            }
-        });
-    }, observerOptions);
-    
-    // Observe all fade-in elements
+    // Collect all animated elements
     const fadeElements = document.querySelectorAll('.fade-in');
-    fadeElements.forEach(element => {
-        observer.observe(element);
-    });
-    
-    // Observe value cards
     const valueCards = document.querySelectorAll('.value-card');
-    valueCards.forEach(card => {
-        observer.observe(card);
-    });
-    
-    // Observe service cards
     const serviceCards = document.querySelectorAll('.service-card');
-    serviceCards.forEach(card => {
-        observer.observe(card);
-    });
+    const allAnimatedElements = [...fadeElements, ...valueCards, ...serviceCards];
+
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+
+                    // For staggered animations on cards
+                    if (entry.target.classList.contains('value-card') || 
+                        entry.target.classList.contains('service-card')) {
+                        const cards = entry.target.parentElement.children;
+                        Array.from(cards).forEach((card, index) => {
+                            setTimeout(() => {
+                                card.classList.add('visible');
+                            }, index * 100); // Stagger by 100ms
+                        });
+                    }
+                }
+            });
+        }, observerOptions);
+
+        // Observe all animated elements
+        allAnimatedElements.forEach(element => {
+            observer.observe(element);
+        });
+    } else {
+        // Fallback for browsers without IntersectionObserver support:
+        // make all elements immediately visible so the page isn't blank
+        allAnimatedElements.forEach(element => {
+            element.classList.add('visible');
+        });
+    }
     
     // ====================================
     // CTA Button Interaction

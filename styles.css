@@ -196,7 +196,7 @@ body {
 }
 
 .hero-content {
-    animation: fadeInUp 1s ease-out;
+    animation: fadeInUp 1s ease-out forwards;
 }
 
 .hero-title {
@@ -565,6 +565,22 @@ body {
 .fade-in.visible {
     opacity: 1;
     transform: translateY(0);
+}
+
+/* Fallback: users who prefer reduced motion or on browsers that skip animations */
+@media (prefers-reduced-motion: reduce) {
+    .hero-content {
+        animation: none;
+        opacity: 1;
+    }
+
+    .fade-in,
+    .value-card,
+    .service-card {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
 }
 
 /* ====================================
